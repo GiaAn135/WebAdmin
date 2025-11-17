@@ -11,7 +11,7 @@
             </h1>
             <p class="text-sm text-slate-500 mt-1">
                 Nông dân: <span class="font-medium text-slate-700">{{ $order->farmer_name }}</span> ·
-                Khu vực: <span class="font-medium text-slate-700">{{ $order->region }}</span>
+                Địa chỉ: <span class="font-medium text-slate-700">{{ $order->region }}</span>
             </p>
         </div>
 
@@ -20,9 +20,11 @@
         </a>
     </div>
 
-    {{-- TIMELINE 11 TRẠNG THÁI --}}
+    {{-- TIMELINE --}}
     <div class="bg-white rounded-xl shadow-sm border px-6 py-4">
-        @php $current = (int) $order->status; @endphp
+        @php
+            $current = $order->current_step;
+        @endphp
 
         <ol class="flex items-center justify-between">
             @foreach($steps as $value => $step)
@@ -52,7 +54,7 @@
         <div class="bg-white rounded-xl shadow-sm border p-4 space-y-2">
             <h2 class="text-sm font-semibold text-slate-700 mb-2">Thông tin nông dân</h2>
             <p class="text-sm">Tên: <span class="font-medium">{{ $order->farmer_name }}</span></p>
-            <p class="text-sm">Khu vực: <span class="font-medium">{{ $order->region }}</span></p>
+            <p class="text-sm">Địa chỉ: <span class="font-medium">{{ $order->region }}</span></p>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border p-4 space-y-2">
@@ -64,12 +66,14 @@
         <div class="bg-white rounded-xl shadow-sm border p-4 space-y-2">
             <h2 class="text-sm font-semibold text-slate-700 mb-2">Cửa hàng VTNN</h2>
             <p class="text-sm">Mã cửa hàng: <span class="font-medium">{{ $order->store_code }}</span></p>
-            <p class="text-sm">Tổng tiền:
+            <p class="text-sm">
+                Tổng tiền:
                 <span class="font-semibold text-emerald-600">
                     {{ number_format($order->total_amount, 0, ',', '.') }} đ
                 </span>
             </p>
-            <p class="text-sm">Trạng thái:
+            <p class="text-sm">
+                Trạng thái:
                 <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium {{ $order->status_badge_class }}">
                     {{ $order->status_label }}
                 </span>
@@ -95,6 +99,11 @@
                             <div class="font-medium text-slate-800">
                                 {{ $item->product_code }} - {{ $item->product_name }}
                             </div>
+                            @if($item->variantName ?? false)
+                                <div class="mt-1 text-[11px] text-slate-500">
+                                    {{ $item->variantName }}
+                                </div>
+                            @endif
                         </td>
                         <td class="px-4 py-2 align-middle text-center">
                             {{ $item->qty }}
@@ -109,7 +118,7 @@
                 @empty
                     <tr>
                         <td colspan="4" class="px-4 py-6 text-center text-slate-500">
-                            Đơn hàng chưa có sản phẩm.
+                            Không có sản phẩm nào trong đơn.
                         </td>
                     </tr>
                 @endforelse

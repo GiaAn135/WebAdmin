@@ -21,5 +21,6 @@ Route::prefix('admin')->middleware(['web'])->group(function () {
   Route::post('orders/{order}/change-status', [\App\Http\Controllers\Admin\OrderController::class,'changeStatus'])
         ->name('orders.change-status');
   Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+
   
 });

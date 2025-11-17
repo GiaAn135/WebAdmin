@@ -11,7 +11,7 @@
                 type="text"
                 name="q"
                 value="{{ request('q') }}"
-                placeholder="Tìm mã đơn, nông dân, LN, TN…"
+                placeholder="Tìm mã đơn, nông dân, địa chỉ…"
                 class="w-full px-3 py-2 border rounded-lg text-sm"
             >
 
@@ -24,15 +24,10 @@
                 @endforeach
             </select>
 
-            <input
-                type="text"
-                name="region"
-                value="{{ request('region') }}"
-                placeholder="Tất cả khu vực"
-                class="px-3 py-2 border rounded-lg text-sm w-40"
+            <button
+                type="submit"
+                class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700"
             >
-
-            <button class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm">
                 Lọc
             </button>
         </form>
@@ -49,7 +44,7 @@
                 <tr>
                     <th class="px-4 py-2 text-left font-semibold text-xs text-slate-500">Mã đơn</th>
                     <th class="px-4 py-2 text-left font-semibold text-xs text-slate-500">Nông dân</th>
-                    <th class="px-4 py-2 text-left font-semibold text-xs text-slate-500">Khu vực</th>
+                    <th class="px-4 py-2 text-left font-semibold text-xs text-slate-500">Địa chỉ</th>
                     <th class="px-4 py-2 text-right font-semibold text-xs text-slate-500">Tổng tiền</th>
                     <th class="px-4 py-2 text-center font-semibold text-xs text-slate-500">Trạng thái</th>
                     <th class="px-4 py-2 text-left font-semibold text-xs text-slate-500">Ngày tạo</th>
@@ -79,10 +74,9 @@
                             </span>
                         </td>
                         <td class="px-4 py-2 align-middle text-slate-600">
-                            {{ optional($order->created_at)->format('d/m/Y') }}
+                            {{ optional($order->createdAt)->format('d/m/Y') }}
                         </td>
                         <td class="px-4 py-2 align-middle text-slate-600">
-                            {{-- Hiển thị mã TN / LN --}}
                             {{ $order->trang_nong_code }} / {{ $order->lao_nong_code }}
                         </td>
                         <td class="px-4 py-2 align-middle text-slate-600">

@@ -11,41 +11,37 @@ class OrderController extends Controller
     // Danh sách đơn
     public function index(Request $request)
     {
-        $q = Order::query();
+        $query = Order::query();
 
-        // Tìm kiếm theo mã đơn / tên nông dân
-        if ($s = $request->input('q')) {
-            $q->where(function ($x) use ($s) {
-                $x->where('code', 'like', "%{$s}%")
-                  ->orWhere('farmer_name', 'like', "%{$s}%");
+        // Tìm kiếm theo mã đơn (code = rút gọn _id) hoặc địa chỉ giao hàng
+        if ($search = $request->input('q')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('_id', 'like', '%' . $search . '%')
+                  ->orWhere('shippingAddress.address', 'like', '%' . $search . '%');
             });
         }
 
-        // Filter trạng thái (nếu có)
+        // Lọc theo trạng thái (awaiting_payment, processing, ...)
         if ($status = $request->input('status')) {
-            $q->where('status', (int) $status);
+            $query->where('status', $status);
         }
 
-        // Filter khu vực (nếu có)
-        if ($region = $request->input('region')) {
-            $q->where('region', $region);
-        }
+        $orders = $query
+            ->orderBy('createdAt', 'desc')
+            ->paginate(15);
 
-        $orders = $q->orderBy('_id', 'desc')->paginate(20);
-
-        $statusOptions = Order::STATUS_LABELS;
+        $statusOptions = Order::getStatusOptions();
 
         return view('orders.index', compact('orders', 'statusOptions'));
     }
 
     // Chi tiết đơn + timeline
-    public function show($id)
+    public function show(string $id)
     {
-        // MongoDB: _id, MySQL: id => findOrFail đều được
+        // laravel-mongodb tự convert string sang ObjectId khi findOrFail
         $order = Order::with('items')->findOrFail($id);
 
-        // 11 bước timeline
-        $steps = Order::STATUS_LABELS;
+        $steps = Order::getTimelineSteps();
 
         return view('orders.show', compact('order', 'steps'));
     }
