@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  nong_dan_so_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nong_dan_so_app
+    restart: unless-stopped
+    environment:
+      - MONGODB_HOST=mongo_nongsanso
+      - DB_URI=mongodb://mongo_nongsanso:27017
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=agriiDB
+    volumes:
+      - ./app:/var/www/html/app
+      - ./public:/var/www/html/public
+      - ./routes:/var/www/html/routes
+      - ./resources:/var/www/html/resources
+      - ./config:/var/www/html/config
+      - ./database:/var/www/html/database
+    depends_on:
+      - mongo_nongsanso
+    networks:
+      - nong_dan_so_network
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./fastcgi.conf:/etc/nginx/fastcgi.conf
+      - ./certs:/etc/ssl/certs
+      - ./public:/var/www/html/public
+    depends_on:
+      - nong_dan_so_app
+    networks:
+      - nong_dan_so_network
+
+  mongo_nongsanso:
+    image: mongo:8.2-noble
+    container_name: mongo_nongsanso
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-nongsanso-data:/data/db
+    networks:
+      - nong_dan_so_network
+
+volumes:
+  mongo-nongsanso-data:
+
+networks:
+  nong_dan_so_network:
